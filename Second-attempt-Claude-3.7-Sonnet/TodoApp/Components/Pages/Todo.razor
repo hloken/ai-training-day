@@ -1,0 +1,120 @@
+@page "/todo"
+@using TodoApp.Models
+@using TodoApp.Services
+@using Microsoft.AspNetCore.Components.Web
+@inject ITodoService TodoService
+
+<PageTitle>Todo List</PageTitle>
+
+<h1>Todo List</h1>
+
+<div class="todo-container">
+    <div class="add-todo">
+        <input @bind="newTodo" placeholder="Enter a new task..." class="form-control" />
+        <button class="btn btn-primary" @onclick="AddTodo">Add</button>
+    </div>
+
+    @if (todos.Count == 0)
+    {
+        <p>No tasks to display. Add a new task above.</p>
+    }
+    else
+    {
+        <div class="todo-list">
+            @foreach (var todo in todos)
+            {
+                <div class="todo-item @(todo.IsComplete ? "completed" : "")">
+                    <div class="todo-checkbox">
+                        <input type="checkbox" @bind="todo.IsComplete" @onclick="() => UpdateTodo(todo)" />
+                    </div>
+                    <div class="todo-title">@todo.Title</div>
+                    <div class="todo-actions">
+                        <button class="btn btn-danger" @onclick="() => DeleteTodo(todo.Id)">Delete</button>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="todo-stats">
+            <p>@todos.Count(t => !t.IsComplete) of @todos.Count remaining</p>
+        </div>
+    }
+</div>
+
+@code {
+    private string newTodo = string.Empty;
+    private List<TodoApp.Models.Todo> todos = new();
+
+    protected override void OnInitialized()
+    {
+        todos = TodoService.GetAllTodos();
+    }
+
+    private void AddTodo()
+    {
+        if (!string.IsNullOrWhiteSpace(newTodo))
+        {
+            var todo = new TodoApp.Models.Todo { Title = newTodo };
+            TodoService.AddTodo(todo);
+            newTodo = string.Empty;
+        }
+    }
+
+    private void UpdateTodo(TodoApp.Models.Todo todo)
+    {
+        TodoService.UpdateTodo(todo);
+    }
+
+    private void DeleteTodo(int id)
+    {
+        TodoService.DeleteTodo(id);
+        todos = TodoService.GetAllTodos();
+    }
+}
+
+<style>
+    .todo-container {
+        max-width: 800px;
+        margin: 20px auto;
+    }
+    
+    .add-todo {
+        display: flex;
+        margin-bottom: 20px;
+        gap: 10px;
+    }
+    
+    .todo-list {
+        margin-top: 20px;
+    }
+    
+    .todo-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .todo-item.completed .todo-title {
+        text-decoration: line-through;
+        color: #6c757d;
+    }
+    
+    .todo-checkbox {
+        margin-right: 10px;
+    }
+    
+    .todo-title {
+        flex-grow: 1;
+    }
+    
+    .todo-actions {
+        display: flex;
+        gap: 5px;
+    }
+    
+    .todo-stats {
+        margin-top: 20px;
+        color: #6c757d;
+    }
+</style>
