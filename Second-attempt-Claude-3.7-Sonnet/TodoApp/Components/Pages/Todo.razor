@@ -56,19 +56,23 @@
         {
             var todo = new TodoApp.Models.Todo { Title = newTodo };
             TodoService.AddTodo(todo);
+            todos = TodoService.GetAllTodos(); // Refresh the list after adding
             newTodo = string.Empty;
+            StateHasChanged(); // Explicitly tell Blazor to update the UI
         }
     }
 
     private void UpdateTodo(TodoApp.Models.Todo todo)
     {
         TodoService.UpdateTodo(todo);
+        StateHasChanged(); // Explicitly tell Blazor to update the UI
     }
 
     private void DeleteTodo(int id)
     {
         TodoService.DeleteTodo(id);
         todos = TodoService.GetAllTodos();
+        StateHasChanged(); // Explicitly tell Blazor to update the UI
     }
 }
 
