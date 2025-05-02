@@ -16,7 +16,7 @@
 </ul>
 
 @code {
-    private string newTodo;
+    private string newTodo = string.Empty; // Initialize to an empty string
     private List<TodoItem> todos = new List<TodoItem>();
 
     private void AddTodo()
@@ -30,7 +30,7 @@
 
     private class TodoItem
     {
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty; // Initialize to an empty string
         public bool IsCompleted { get; set; }
     }
 }
